@@ -1,0 +1,54 @@
+#include "p16F628a.inc"
+__CONFIG _FOSC_INTOSCCLK & _WDTE_OFF & _PWRTE_OFF & _MCLRE_OFF & _BOREN_OFF & _LVP_OFF & _CPD_OFF & _CP_OFF
+
+RES_VECT CODE 0x0000 ; processor reset vector
+GOTO Inicio ; go to beginning of program
+; TODO ADD INTERRUPTS HERE IF USED
+MAIN_PROG CODE ; let linker place main program
+
+cont equ 0x30	
+num1 equ 0x31
+num2 equ 0x32
+resultado equ 0x33
+ban equ 0x34
+entra equ 0x35
+
+Inicio: 
+    bcf STATUS, RP1
+    bsf STATUS, RP0
+    movlw b'00000000'
+    movwf TRISA
+    movwf TRISB
+    bcf STATUS, RP0
+    
+    MOVFW PORTA
+    MOVWF entra
+    
+	MOVLW d'0'
+	MOVWF cont
+ciclo:	INCF cont, 1
+ 	GOTO multiplicacion
+rev:	
+	MOVFW entra
+	XORWF resultado
+	MOVFW resultado
+	MOVWF ban
+	INCF ban, 1
+	DECFSZ ban
+GOTO ciclo
+nop ;Entro
+MOVFW cont
+MOVWF PORTB
+GOTO Inicio
+ 
+multiplicacion: MOVFW cont
+	MOVWF num1
+	MOVWF num2
+	MOVLW d'0'
+loop: ADDWF num1, 0
+	DECFSZ num2
+	GOTO loop
+MOVWF resultado
+GOTO rev
+	
+END
