@@ -1,0 +1,729 @@
+#include "p16F887.inc"   ; TODO INSERT CONFIG CODE HERE USING CONFIG BITS GENERATOR
+ 	__CONFIG	_CONFIG1,	_INTRC_OSC_NOCLKOUT & _WDT_OFF & _PWRTE_OFF & _MCLRE_ON & _CP_OFF & _CPD_OFF & _BOR_OFF & _IESO_ON & _FCMEN_ON & _LVP_OFF 
+ 	__CONFIG	_CONFIG2,	_BOR40V & _WRT_OFF
+
+RES_VECT  CODE    0x0000            ; processor reset vector
+    GOTO    START                   ; go to beginning of program
+
+    BCF PORTC,0		;reset
+    MOVLW 0x01
+    MOVWF PORTD
+    
+    BSF PORTC,1		;exec
+    CALL time
+    BCF PORTC,1
+    CALL time
+  
+    GOTO    START
+
+MAIN_PROG CODE                      ; let linker place main program
+
+START
+
+Contra_1 EQU 0x20
+Contra_2 EQU 0x21
+Contra_3 EQU 0x22
+Contra_4 EQU 0x23
+Contra_5 EQU 0x24
+Contra_6 EQU 0x25
+Contra_7 EQU 0x26
+Contra_8 EQU 0x27 
+
+PSWD_1 EQU 0x32
+PSWD_2 EQU 0x33
+PSWD_3 EQU 0x34
+PSWD_4 EQU 0x35
+PSWD_5 EQU 0x36
+PSWD_6 EQU 0x37
+PSWD_7 EQU 0x38
+PSWD_8 EQU 0x39  
+ 
+i equ 0x30
+j equ 0x31
+ 
+ban1 equ 0x40
+ban2 equ 0x41
+
+START
+
+    BANKSEL PORTA ;
+    CLRF PORTA ;Init PORTA
+    BANKSEL ANSEL ;
+    CLRF ANSEL ;digital I/O
+    CLRF ANSELH
+    BANKSEL TRISA ;
+    MOVLW d'0'
+    MOVWF TRISA 
+    CLRF TRISB
+    CLRF TRISC
+    CLRF TRISD
+    CLRF TRISE
+    BCF STATUS,RP1
+    BCF STATUS,RP0
+    BCF PORTC,1
+    BCF PORTC,0
+    
+INITLCD
+    BCF PORTC,0		;reset
+    MOVLW 0x01
+    MOVWF PORTD
+    
+    BSF PORTC,1		;exec
+    CALL time
+    BCF PORTC,1
+    CALL time
+    
+    MOVLW 0x0C		;first line
+    MOVWF PORTD
+    
+    BSF PORTC,1		;exec
+    CALL time
+    BCF PORTC,1
+    CALL time
+    
+    MOVLW 0x3C		;cursor mode
+    MOVWF PORTD
+    
+    BSF PORTC,1		;exec
+    CALL time
+    BCF PORTC,1
+    CALL time
+    
+    
+INICIO	
+   
+    clrf PSWD_1
+    clrf PSWD_2
+    clrf PSWD_3
+    clrf PSWD_4
+    clrf PSWD_5
+    clrf PSWD_6
+    clrf PSWD_7
+    clrf PSWD_8
+    
+    
+    BCF PORTC,0		;command mode
+    CALL time
+    
+    MOVLW 0x80		;LCD position
+    MOVWF PORTD
+    CALL exec
+    
+    BSF PORTC,0		;data mode
+    CALL time
+
+    MOVLW 'C'
+    MOVWF PORTD
+    CALL exec
+    MOVLW 'l'
+    MOVWF PORTD
+    CALL exec
+    MOVLW 'a'
+    MOVWF PORTD
+    CALL exec
+    MOVLW 'v'
+    MOVWF PORTD
+    CALL exec
+    MOVLW 'e'
+    MOVWF PORTD
+    CALL exec
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    BCF PORTC,0		;command mode
+    CALL time
+    
+    MOVLW 0xC0		;LCD position 
+    MOVWF PORTD
+    CALL exec
+    
+    BSF PORTC,0		;data mode
+    CALL time
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    
+    MOVLW b'00110101'
+    MOVWF PORTD
+    CALL exec
+    MOVLW b'00110101'
+    MOVWF Contra_1
+    MOVLW b'00110101'
+    MOVWF PORTD
+    CALL exec
+    MOVLW b'00110101'
+    MOVWF Contra_2
+    MOVLW b'00110001'
+    MOVWF PORTD
+    CALL exec
+    MOVLW b'00110001'
+    MOVWF Contra_3
+    MOVLW b'00110100'
+    MOVWF PORTD
+    CALL exec
+    MOVLW b'00110100'
+    MOVWF Contra_4
+    MOVLW b'00110110'
+    MOVWF PORTD
+    CALL exec
+    MOVLW b'00110110'
+    MOVWF Contra_5
+    MOVLW b'00111001'
+    MOVWF PORTD
+    CALL exec
+    MOVLW b'00111001'
+    MOVWF Contra_6
+    MOVLW b'00111000'
+    MOVWF PORTD
+    CALL exec
+    MOVLW b'00111000'
+    MOVWF Contra_7
+    MOVLW b'00111000'
+    MOVWF PORTD
+    CALL exec
+    MOVLW b'00111000'
+    MOVWF Contra_8
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    BCF PORTC,0		;command mode
+    CALL time
+    
+    MOVLW 0x90		;LCD position 
+    MOVWF PORTD
+    CALL exec
+    
+    BSF PORTC,0		;data mode
+    CALL time
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    MOVLW 'I'
+    MOVWF PORTD
+    CALL exec
+    MOVLW 'n'
+    MOVWF PORTD
+    CALL exec
+    MOVLW 'g'
+    MOVWF PORTD
+    CALL exec
+    MOVLW 'r'
+    MOVWF PORTD
+    CALL exec
+    MOVLW 'e'
+    MOVWF PORTD
+    CALL exec
+    MOVLW 's'
+    MOVWF PORTD
+    CALL exec
+    MOVLW 'a'
+    MOVWF PORTD
+    CALL exec
+    MOVLW ' '
+    MOVWF PORTD
+    CALL exec
+    MOVLW 'l'
+    MOVWF PORTD
+    CALL exec
+    MOVLW 'a'
+    MOVWF PORTD
+    CALL exec
+    MOVLW ' '
+    MOVWF PORTD
+    CALL exec
+    MOVLW 'c'
+    MOVWF PORTD
+    CALL exec
+    MOVLW 'l'
+    MOVWF PORTD
+    CALL exec
+    MOVLW 'a'
+    MOVWF PORTD
+    CALL exec
+    MOVLW 'v'
+    MOVWF PORTD
+    CALL exec
+    MOVLW 'e'
+    MOVWF PORTD
+    CALL exec
+    MOVLW ':'
+    MOVWF PORTD
+    CALL exec
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    BCF PORTC,0		;command mode
+    CALL time
+    
+    MOVLW 0xD0		;LCD position 
+    MOVWF PORTD
+    CALL exec
+    
+    BSF PORTC,0		;data mode
+    CALL time
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    
+    CALL Ingresar
+    movf ban1,0
+    movwf PSWD_1
+    CALL Ingresar
+    movf ban1,0
+    movwf PSWD_2
+    CALL Ingresar
+    movf ban1,0
+    movwf PSWD_3
+    CALL Ingresar
+    movf ban1,0
+    movwf PSWD_4
+    CALL Ingresar
+    movf ban1,0
+    movwf PSWD_5
+    CALL Ingresar
+    movf ban1,0
+    movwf PSWD_6
+    CALL Ingresar
+    movf ban1,0
+    movwf PSWD_7
+    CALL Ingresar
+    movf ban1,0
+    movwf PSWD_8
+    call time2
+    
+    CALL Comprobar
+    
+    BCF PORTC,0		;command mode
+    CALL time
+    
+    MOVLW 0x81		;LCD position
+    MOVWF PORTD
+    CALL exec
+    
+    
+        
+    GOTO INICIO
+
+Ingresar
+    BSF PORTA,6
+    BSF PORTA,5
+    BSF PORTA,4
+    BSF PORTA,3
+    BSF PORTA,2
+    BSF PORTA,1
+    BSF PORTA,0
+    
+    movlw d'0'
+    movwf ban2
+    
+    BCF PORTA,0
+    BTFSS PORTA,4
+    CALL numero1
+    BTFSS PORTA,5
+    CALL numero2
+    BTFSS PORTA,6
+    CALL numero3
+    CALL time
+    BSF PORTA,0
+    
+    BCF PORTA,1
+    BTFSS PORTA,4
+    CALL numero4
+    BTFSS PORTA,5
+    CALL numero5
+    BTFSS PORTA,6
+    CALL numero6
+    CALL time
+    BSF PORTA,1
+    
+    BCF PORTA,2
+    BTFSS PORTA,4
+    CALL numero7
+    BTFSS PORTA,5
+    CALL numero8
+    BTFSS PORTA,6
+    CALL numero9
+    CALL time
+    BSF PORTA,2
+    
+    BCF PORTA,3
+    BTFSS PORTA,4
+    CALL Regresar
+    BTFSS PORTA,5
+    CALL numero0
+    BTFSS PORTA,6
+    CALL enter
+    CALL time
+    BCF PORTA,3
+    
+    MOVLW d'1'
+    SUBWF ban2,0
+    BTFSC STATUS,Z
+    RETURN
+    GOTO Ingresar
+    
+numero1
+    CALL Comp4
+    MOVLW '1'
+    MOVWF ban1
+    MOVWF PORTD
+    CALL exec
+    CALL time2
+    MOVLW d'1'
+    MOVWF ban2
+    return
+numero2
+    CALL Comp5
+    MOVLW '2'
+    MOVWF ban1
+    MOVWF PORTD
+    CALL exec
+    CALL time2
+    MOVLW d'1'
+    MOVWF ban2
+    RETURN
+numero3
+    CALL Comp6
+    MOVLW '3'
+    MOVWF ban1
+    MOVWF PORTD
+    CALL exec
+    CALL time2
+    MOVLW d'1'
+    MOVWF ban2
+    return
+numero4
+    CALL Comp4
+    MOVLW '4'
+    MOVWF ban1
+    MOVWF PORTD
+    CALL exec
+    CALL time2
+    MOVLW d'1'
+    MOVWF ban2
+    return
+numero5
+    CALL Comp5
+    MOVLW '5'
+    MOVWF ban1
+    MOVWF PORTD
+    CALL exec
+    CALL time2
+    MOVLW d'1'
+    MOVWF ban2
+    return
+numero6
+    CALL Comp6
+    MOVLW '6'
+    MOVWF ban1
+    MOVWF PORTD
+    CALL exec
+    CALL time2
+    MOVLW d'1'
+    MOVWF ban2
+    return
+numero7
+    CALL Comp4
+    MOVLW '7'
+    MOVWF ban1
+    MOVWF PORTD
+    CALL exec
+    CALL time2
+    MOVLW d'1'
+    MOVWF ban2
+    return
+numero8
+    CALL Comp5
+    MOVLW '8'    
+    MOVWF ban1
+    MOVWF PORTD
+    CALL exec
+    CALL time2
+    MOVLW d'1'
+    MOVWF ban2
+    return
+numero9
+    CALL Comp6
+    MOVLW '9'
+    MOVWF ban1
+    MOVWF PORTD
+    CALL exec
+    CALL time2
+    MOVLW d'1'
+    MOVWF ban2
+    return
+Regresar
+    CALL Comp4
+    MOVLW '*'
+    MOVWF ban1
+    MOVWF PORTD
+    CALL exec
+    CALL time2
+    MOVLW d'1'
+    MOVWF ban2
+    return
+numero0
+    CALL Comp5
+    MOVLW '0'
+    MOVWF ban1
+    MOVWF PORTD
+    CALL exec
+    CALL time2
+    MOVLW d'1'
+    MOVWF ban2
+    return
+enter
+    CALL Comprobar
+    RETURN
+    
+exec
+    BSF PORTC,1		;exec
+    CALL time
+    BCF PORTC,1
+    CALL time
+    RETURN
+    
+time
+    CLRF i
+    MOVLW d'10'
+    MOVWF j
+ciclo    
+    MOVLW d'80'
+    MOVWF i
+    DECFSZ i
+    GOTO $-1
+    DECFSZ j
+    GOTO ciclo
+    RETURN
+
+time2
+    CLRF i
+    MOVLW d'25'
+    MOVWF j
+ciclo2 
+    MOVLW d'25'
+    MOVWF i
+    DECFSZ i
+    GOTO $-1
+    DECFSZ j
+    GOTO ciclo2
+    RETURN
+Comp4
+    btfss   PORTA,4      
+    goto    Comp4
+    return
+Comp5
+    btfss   PORTA,5      
+    goto    Comp5
+    return
+Comp6
+    btfss   PORTA,6      
+    goto    Comp6
+    return
+Comprobar	movf	Contra_1, 0		
+		subwf	PSWD_1, 0
+		btfss	STATUS, Z
+		goto	dif
+		movf	Contra_2, 0		
+		subwf	PSWD_2, 0
+		btfss	STATUS, Z
+		goto	dif
+		movf	Contra_3, 0		
+		subwf	PSWD_3, 0
+		btfss	STATUS, Z
+		goto	dif
+		movf	Contra_4, 0		
+		subwf	PSWD_4, 0
+		btfss	STATUS, Z
+		goto	dif
+		movf	Contra_5, 0		
+		subwf	PSWD_5, 0
+		btfss	STATUS, Z
+		goto	dif
+		movf	Contra_6, 0		
+		subwf	PSWD_6, 0
+		btfss	STATUS, Z
+		goto	dif
+		movf	Contra_7, 0		
+		subwf	PSWD_7, 0
+		btfss	STATUS, Z
+		goto	dif
+		movf	Contra_8, 0		
+		subwf	PSWD_8, 0
+		btfss	STATUS, Z
+		goto	dif
+		goto	igual
+		
+dif
+    BCF PORTC,0		;reset
+    MOVLW 0x01
+    MOVWF PORTD
+    
+    BSF PORTC,1		;exec
+    CALL time
+    BCF PORTC,1
+    CALL time
+    
+    MOVLW 0x0C		;first line
+    MOVWF PORTD
+    
+    BSF PORTC,1		;exec
+    CALL time
+    BCF PORTC,1
+    CALL time
+    
+    MOVLW 0x3C		;cursor mode
+    MOVWF PORTD
+    
+    BSF PORTC,1		;exec
+    CALL time
+    BCF PORTC,1
+    CALL time
+	difer
+	BCF PORTC,0		;command mode
+	CALL time
+
+	MOVLW 0x80		;LCD position
+	MOVWF PORTD
+	CALL exec
+
+	BSF PORTC,0		;data mode
+	CALL time
+
+	MOVLW '¡'
+	MOVWF PORTD
+	CALL exec
+	MOVLW 'I'
+	MOVWF PORTD
+	CALL exec
+	MOVLW 'n'
+	MOVWF PORTD
+	CALL exec
+	MOVLW 'c'
+	MOVWF PORTD
+	CALL exec
+	MOVLW 'o'
+	MOVWF PORTD
+	CALL exec
+	MOVLW 'r'
+	MOVWF PORTD
+	CALL exec
+	MOVLW 'r'
+	MOVWF PORTD
+	CALL exec
+	MOVLW 'e'
+	MOVWF PORTD
+	CALL exec
+	MOVLW 'c'
+	MOVWF PORTD
+	CALL exec
+	MOVLW 't'
+	MOVWF PORTD
+	CALL exec
+	MOVLW 'o'
+	MOVWF PORTD
+	CALL exec
+	MOVLW '!'
+	MOVWF PORTD
+	CALL exec
+    GOTO difer
+igual
+    BCF PORTC,0		;reset
+    MOVLW 0x01
+    MOVWF PORTD
+    
+    BSF PORTC,1		;exec
+    CALL time
+    BCF PORTC,1
+    CALL time
+    
+    MOVLW 0x0C		;first line
+    MOVWF PORTD
+    
+    BSF PORTC,1		;exec
+    CALL time
+    BCF PORTC,1
+    CALL time
+    
+    MOVLW 0x3C		;cursor mode
+    MOVWF PORTD
+    
+    BSF PORTC,1		;exec
+    CALL time
+    BCF PORTC,1
+    CALL time
+    iguales
+    
+	    BCF PORTC,0		;command mode
+	    CALL time
+
+	    MOVLW 0x80		;LCD position
+	    MOVWF PORTD
+	    CALL exec
+
+	    BSF PORTC,0		;data mode
+	    CALL time
+	    
+	MOVLW '¡'
+	MOVWF PORTD
+	CALL exec
+	MOVLW 'C'
+	MOVWF PORTD
+	CALL exec
+	MOVLW 'o'
+	MOVWF PORTD
+	CALL exec
+	MOVLW 'r'
+	MOVWF PORTD
+	CALL exec
+	MOVLW 'r'
+	MOVWF PORTD
+	CALL exec
+	MOVLW 'e'
+	MOVWF PORTD
+	CALL exec
+	MOVLW 'c'
+	MOVWF PORTD
+	CALL exec
+	MOVLW 't'
+	MOVWF PORTD
+	CALL exec
+	MOVLW 'a'
+	MOVWF PORTD
+	CALL exec
+	MOVLW '!'
+	MOVWF PORTD
+	CALL exec
+    
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    BCF PORTC,0		;command mode
+    CALL time
+    
+    MOVLW 0xC0		;LCD position 
+    MOVWF PORTD
+    CALL exec
+    
+    BSF PORTC,0		;data mode
+    CALL time
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	MOVLW 'E'
+	MOVWF PORTD
+	CALL exec
+	MOVLW 'n'
+	MOVWF PORTD
+	CALL exec
+	MOVLW 't'
+	MOVWF PORTD
+	CALL exec
+	MOVLW 'r'
+	MOVWF PORTD
+	CALL exec
+	MOVLW 'a'
+	MOVWF PORTD
+	CALL exec
+	MOVLW 's'
+	MOVWF PORTD
+	CALL exec
+	MOVLW 't'
+	MOVWF PORTD
+	CALL exec
+	MOVLW 'e'
+	MOVWF PORTD
+	CALL exec
+	MOVLW '!'
+	MOVWF PORTD
+	CALL exec
+	MOVLW '!'
+	MOVWF PORTD
+
+    GOTO iguales
+		
+END
