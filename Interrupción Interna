@@ -1,0 +1,248 @@
+#include "p16F628a.inc" ;incluir librerias relacionadas con el dispositivo
+__CONFIG _FOSC_INTOSCCLK & _WDTE_OFF & _PWRTE_OFF & _MCLRE_OFF & _BOREN_OFF & _LVP_OFF & _CPD_OFF & _CP_OFF
+; TODO INSERT CONFIG CODE HERE USING CONFIG BITS GENERATOR
+
+RES_VECT CODE 0x0000 ; processor reset vector
+GOTO START ; go to beginning of program
+INT_VECT CODE 0x0004 ; interrupt vector
+
+    DECFSZ CNT
+    GOTO pad
+    MOVLW '9'
+    XORWF d6, 0
+    BTFSC STATUS, Z
+    CALL cd6
+    INCF d6
+    MOVLW D'16' ; 50mS * value
+    MOVWF CNT
+    MOVLW D'100' ; preload value
+    MOVWF TMR0
+pad:bcf INTCON, T0IF ; clr TMR0 interrupt flag
+    retfie ; return from interrupt
+    
+cd6
+    MOVLW d'47'
+    MOVWF d6
+    MOVLW '5'
+    XORWF d5, 0
+    BTFSC STATUS, Z
+    CALL cd5
+    INCF d5
+    RETURN
+
+cd5
+    MOVLW d'47'
+    MOVWF d5
+    MOVLW '9'
+    XORWF d4, 0
+    BTFSC STATUS, Z
+    CALL cd4
+    INCF d4
+    RETURN
+    
+cd4
+    MOVLW d'47'
+    MOVWF d4
+    MOVLW '5'
+    XORWF d3, 0
+    BTFSC STATUS, Z
+    CALL cd3
+    INCF d3
+    RETURN
+    
+cd3
+    MOVLW d'47'
+    MOVWF d3
+    MOVLW '3'
+    XORWF d2, 0
+    BTFSC STATUS, Z
+    CALL cd2.1
+    MOVLW '9'
+    XORWF d2, 0
+    BTFSC STATUS, Z
+    CALL cd2
+    INCF d2
+    RETURN
+
+cd2.1
+    MOVLW '2'
+    XORWF d1, 0
+    BTFSS STATUS, Z
+    GOTO r
+    MOVLW d'47'
+    MOVWF d2
+    MOVLW d'48'
+    MOVWF d1
+r:  RETURN
+    
+cd2
+    MOVLW d'47'
+    MOVWF d2
+    MOVLW '2'
+    XORWF d1, 0
+    BTFSC STATUS, Z
+    CALL cd1
+    INCF d1
+    RETURN
+    
+cd1
+    MOVLW d'47'
+    MOVWF d1
+    RETURN
+    
+MAIN_PROG CODE                      ; let linker place main program
+CNT equ 0x20
+i equ 0x30
+j equ 0x31
+k equ 0x32
+d6 equ 0x33
+d5 equ 0x34
+d4 equ 0x35
+d3 equ 0x36
+d2 equ 0x37
+d1 equ 0x38
+START
+; setup registers
+; setp TMR0 operation
+; internal clock, pos edge, prescale 256
+MOVLW 0x07 ;Apagar comparadores
+MOVWF CMCON
+BSF STATUS, RP0
+MOVLW 0x00
+MOVWF TRISA
+MOVWF TRISB
+movlw b'10000111'
+movwf OPTION_REG
+BCF STATUS, RP0 ; BANK 0
+ ; setup TMR0 INT
+bsf INTCON, GIE ; enable global interrupt
+bsf INTCON, T0IE ; enable TMR0 interrupt
+bcf INTCON, T0IF ; clr TMR0 interrupt flag to turn on,
+; must be cleared after interrupt
+; 256uS * 195 =~ 50mS
+; 255 - 195 = 60
+MOVLW D'60' ; preload value
+MOVWF TMR0
+MOVLW D'10' ; 50mS * 20 = 1 Sec.
+MOVWF CNT
+CLRF PORTA
+CLRF PORTB
+;Inicializacion del reloj 
+    
+    MOVLW b'00110101'
+    MOVWF d6
+    MOVLW b'00110101'
+    MOVWF d5
+    MOVLW b'00111001'
+    MOVWF d4
+    MOVLW b'00110101'
+    MOVWF d3
+    MOVLW b'00110011'
+    MOVWF d2
+    MOVLW b'00110010'
+    MOVWF d1
+    
+    ;-------------------------------------
+    
+;-------------------------------------------------
+INITLCD
+    BCF PORTA,0		;reset
+    MOVLW 0x01
+    MOVWF PORTB
+    
+    BSF PORTA,1		;exec
+    CALL time
+    BCF PORTA,1
+    CALL time
+    
+    MOVLW 0x0C		;first line
+    MOVWF PORTB
+    
+    BSF PORTA,1		;exec
+    CALL time
+    BCF PORTA,1
+    CALL time
+         
+    MOVLW 0x3C		;cursor mode
+    MOVWF PORTB
+    
+    BSF PORTA,1		;exec
+    CALL time
+    BCF PORTA,1
+    CALL time
+;--------------------------------------------------------------
+INICIO	  
+    
+    BCF PORTA,0		;command mode
+    CALL time
+    
+    MOVLW 0x80		;LCD position
+    MOVWF PORTB
+    CALL exec
+    
+   BSF PORTA,0		;data mode
+    CALL time
+    
+    MOVLW '"'		;message1
+    MOVWF PORTB
+    CALL exec
+    
+    MOVFW d1	
+    MOVWF PORTB
+    CALL exec
+    MOVFW d2
+    MOVWF PORTB
+    CALL exec
+    MOVLW ':'
+    MOVWF PORTB
+    CALL exec
+    MOVFW d3
+    MOVWF PORTB
+    CALL exec
+    MOVFW d4
+    MOVWF PORTB
+    CALL exec
+    MOVLW ':'
+    MOVWF PORTB
+    CALL exec
+    MOVFW d5
+    MOVWF PORTB
+    CALL exec
+    MOVFW d6
+    MOVWF PORTB
+    CALL exec
+    MOVLW '"'
+    MOVWF PORTB
+    CALL exec
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    BCF PORTA,0		;command mode
+    CALL time
+    
+    MOVLW 0xC0		;LCD position 
+    MOVWF PORTB
+    CALL exec
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    GOTO INICIO
+;-----------------------------------------------------------------------------
+exec
+    BSF PORTA,1		;exec
+    CALL time
+    BCF PORTA,1
+    CALL time
+    RETURN
+    
+time
+    CLRF i
+    MOVLW d'10'
+    MOVWF j
+ciclo    
+    MOVLW d'80'
+    MOVWF i
+    DECFSZ i
+    GOTO $-1
+    DECFSZ j
+    GOTO ciclo
+    RETURN
+ 
+
+ END
